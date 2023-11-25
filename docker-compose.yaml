@@ -1,0 +1,13 @@
+version: "2.2"
+services:
+  app:
+    build: .
+    volumes:
+      - .:/opt
+    environment:
+      - APP_NAME=property-data-api
+      - FLASK_LOG_LEVEL=DEBUG
+      - FLASK_APP=manage.py
+    mem_limit: 100m
+    ports:
+      - "5000:8000"

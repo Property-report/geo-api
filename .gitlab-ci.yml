@@ -1,0 +1,22 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+build:
+  stage: build
+  script:
+    - docker build -t test2 .
+    - docker tag test2 registry.jacobscodingstuff.com/optistack/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+    - docker login -p $registry_password -u $registry_user registry.jacobscodingstuff.com
+    - docker push registry.jacobscodingstuff.com/optistack/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+    - apk add --no-cache curl
+    - |
+      curl -X POST \
+      https://hooks.slack.com/services/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 \
+      -H 'Content-Type: application/json' \
+      -d "{\"text\": \"new service avalible for deployment.\\n${CI_PROJECT_NAME}: ${CI_COMMIT_REF_NAME}\"}"
+  only:
+    - tags
+  except:
+    - branches
